@@ -18,7 +18,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public Users create(Users user) throws Exception {
-        Optional<Users> optional = userRepo.findByUser(user.getFirstName());
+        Optional<Users> optional = userRepo.findByFirstName(user.getFirstName());
         if(optional.isPresent())
             throw new Exception("User already exist: " + user.getFirstName());
         user = userRepo.save(user);

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface AttributeRepo extends JpaRepository<Attribute, Long> {
-    Optional<Attribute> findByAttribute(String attributeName);
+    Optional<Attribute> findByAttributeName(String attributeName);
 }

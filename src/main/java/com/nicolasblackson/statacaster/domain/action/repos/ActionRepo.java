@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface ActionRepo extends JpaRepository<Action, Long> {
-    Optional<Action> findByAction(String actionName);
+    Optional<Action> findByActionName(String actionName);
 
 }
