@@ -5,14 +5,17 @@ import lombok.*;
 
 @Entity
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Data
+@Table(name = "action")
 public class Action {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String actionName;
 
     private Boolean trait;

@@ -8,16 +8,20 @@ import java.util.List;
 
 @Entity
 @NoArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @Data
+@Table(name = "attribute")
 public class Attribute {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @NonNull
     private String attributeName;
 
+    @NonNull
     private Integer points;
 
     @Column(name = "user_id")

@@ -1,7 +1,10 @@
 package com.nicolasblackson.statacaster.domain.attribute.controllers;
 
+import com.nicolasblackson.statacaster.domain.action.models.Action;
 import com.nicolasblackson.statacaster.domain.attribute.model.Attribute;
 import com.nicolasblackson.statacaster.domain.attribute.services.AttributeService;
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceCreationException;
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,24 +28,31 @@ public class AttributeController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Attribute> create(@RequestBody Attribute attribute) throws Exception {
+    public ResponseEntity<Attribute> create(@RequestBody Attribute attribute) throws ResourceCreationException {
         attribute = attributeService.create(attribute);
         return new ResponseEntity<>(attribute, HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Attribute> getAttributeById(@PathVariable("id") Long id) throws Exception {
-        Attribute attribute = attributeService.getAttributeById(id);
-        return new ResponseEntity<>(attribute, HttpStatus.OK);
+    public ResponseEntity<?> getAttributeById(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        try{
+            Attribute attribute = attributeService.getAttributeById(id);
+            ResponseEntity<?> response = new ResponseEntity<>(attribute, HttpStatus.OK);
+            return response;
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
     }
 
     @PutMapping("{id}")
-    public ResponseEntity<Attribute> updateAttribute(@PathVariable("id") Long id, @RequestBody Attribute attributeDetails){
+    public ResponseEntity<Attribute> updateAttribute(@PathVariable("id") Long id, @RequestBody Attribute attributeDetails) throws Exception {
         try{
             Attribute updateAttribute = attributeService.updateAttribute(id, attributeDetails);
             ResponseEntity response = new ResponseEntity(updateAttribute, HttpStatus.OK);
             return response;
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .build();
@@ -56,7 +66,7 @@ public class AttributeController {
             return ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build();
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .build();

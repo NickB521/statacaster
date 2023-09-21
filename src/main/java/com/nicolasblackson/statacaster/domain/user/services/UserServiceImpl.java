@@ -1,5 +1,7 @@
 package com.nicolasblackson.statacaster.domain.user.services;
 
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceCreationException;
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceNotFoundException;
 import com.nicolasblackson.statacaster.domain.user.models.Users;
 import com.nicolasblackson.statacaster.domain.user.repos.UserRepo;
 import org.springframework.stereotype.Service;
@@ -17,18 +19,18 @@ public class UserServiceImpl implements UserService {
         this.userRepo = userRepo;
     }
     @Override
-    public Users create(Users user) throws Exception {
+    public Users create(Users user) throws ResourceCreationException {
         Optional<Users> optional = userRepo.findByFirstName(user.getFirstName());
         if(optional.isPresent())
-            throw new Exception("User already exist: " + user.getFirstName());
+            throw new ResourceCreationException("User already exist: " + user.getFirstName());
         user = userRepo.save(user);
         return user;
     }
 
     @Override
-    public Users getUserById(Long id) throws Exception {
+    public Users getUserById(Long id) throws ResourceNotFoundException {
         Users user = userRepo.findById(id)
-                .orElseThrow(()->new Exception("No User with id: " + id));
+                .orElseThrow(()->new ResourceNotFoundException("No User with id: " + id));
         return user;
     }
 
@@ -38,7 +40,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Users updateUser(Long id, Users userDetails) throws Exception {
+    public Users updateUser(Long id, Users userDetails) throws ResourceNotFoundException {
         Users user = getUserById(id);
         user.setFirstName(userDetails.getFirstName());
         user.setLastName(userDetails.getLastName());
@@ -48,10 +50,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean deleteUser(Long id) throws Exception {
+    public Boolean deleteUser(Long id) throws ResourceNotFoundException {
         Optional<Users> userOptional = userRepo.findById(id);
         if(userOptional.isEmpty()){
-            throw new Exception("User does not exists, can not delete");
+            throw new ResourceNotFoundException("User does not exists, can not delete");
         }
         Users userToDelete = userOptional.get();
         userRepo.delete(userToDelete);

@@ -1,5 +1,8 @@
 package com.nicolasblackson.statacaster.domain.user.controller;
 
+import com.nicolasblackson.statacaster.domain.action.models.Action;
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceCreationException;
+import com.nicolasblackson.statacaster.domain.exceptions.ResourceNotFoundException;
 import com.nicolasblackson.statacaster.domain.user.models.Users;
 import com.nicolasblackson.statacaster.domain.user.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,24 +30,31 @@ public class UserController {
     }
 
     @PostMapping("")
-    public ResponseEntity<Users> create(@RequestBody Users user) throws Exception {
+    public ResponseEntity<Users> create(@RequestBody Users user) throws ResourceCreationException {
         user = userService.create(user);
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     @GetMapping("{id}")
-    public ResponseEntity<Users> getUserById(@PathVariable("id") Long id) throws Exception {
-        Users user = userService.getUserById(id);
-        return new ResponseEntity<>(user, HttpStatus.OK);
+    public ResponseEntity<?> getUserById(@PathVariable("id") Long id) throws ResourceNotFoundException {
+        try{
+            Users users = userService.getUserById(id);
+            ResponseEntity<?> response = new ResponseEntity<>(users, HttpStatus.OK);
+            return response;
+        } catch (ResourceNotFoundException e) {
+            return ResponseEntity
+                    .status(HttpStatus.NOT_FOUND)
+                    .build();
+        }
     }
 
     @PutMapping("{id}")
     public ResponseEntity<Users> updateUser(@PathVariable("id") Long id, @RequestBody Users userDetails){
         try{
             Users updateUser = userService.updateUser(id, userDetails);
-            ResponseEntity response = new ResponseEntity(updateUser, HttpStatus.OK);
+            ResponseEntity response = new ResponseEntity(updateUser, HttpStatus.ACCEPTED);
             return response;
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .build();
@@ -58,7 +68,7 @@ public class UserController {
             return ResponseEntity
                     .status(HttpStatus.NO_CONTENT)
                     .build();
-        } catch (Exception e) {
+        } catch (ResourceNotFoundException e) {
             return ResponseEntity
                     .status(HttpStatus.NOT_FOUND)
                     .build();
